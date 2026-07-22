@@ -12,5 +12,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     // 기간 내 전체 조회
     List<Transaction> findByUserAndTransactionDateBetween(User user, LocalDate transactionDateAfter, LocalDate transactionDateBefore);
 
-    Optional<Transaction> findByIdAndUser(Long id, User user);
+    Optional<Transaction> findByIdAndUser_Id(Long id, Long userId);
 }
