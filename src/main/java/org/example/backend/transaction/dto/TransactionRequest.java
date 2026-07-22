@@ -25,6 +25,6 @@ public class TransactionRequest {
     @NotNull(message = "카테고리를 선택해주세요.")
     private Long categoryId;
 
-    @Size(message = "255자 이하여야 합니다.")
+    @Size(message = "255자 이하여야 합니다.", max = 255)
     private String description;
 }

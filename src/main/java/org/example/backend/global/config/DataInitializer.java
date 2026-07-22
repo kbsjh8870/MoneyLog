@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
+import java.util.Optional;
 
 @Profile("local")
 @Component
@@ -43,6 +45,8 @@ public class DataInitializer implements CommandLineRunner {
                 .user(user).name("식비").type(CategoryType.EXPENSE).build());
         Category salary = categoryRepository.save(Category.builder()
                 .user(user).name("월급").type(CategoryType.INCOME).build());
+        Category subscribe = categoryRepository.save(Category.builder()
+                .user(user).name("구독료").type(CategoryType.EXPENSE).emoji("😏").build());
 
         transactionRepository.save(Transaction.builder()
                 .user(user).category(food).type(CategoryType.EXPENSE)
@@ -64,6 +68,11 @@ public class DataInitializer implements CommandLineRunner {
                 .amount(15000L).description("6월 외식")
                 .transactionDate(LocalDate.of(2026, 6, 15))
                 .build());
+        transactionRepository.save(Transaction.builder()
+                .user(user).category(subscribe).type(CategoryType.EXPENSE)
+                .amount(15000L).description("6월 구독료")
+                .transactionDate(LocalDate.of(2026, 6, 15))
+                .build());
 
         // 2) 조회 확인
         long count = transactionRepository.count();
@@ -71,6 +80,12 @@ public class DataInitializer implements CommandLineRunner {
         transactionRepository.findAll()
                 .forEach(t -> log.info("거래: {}원 / {} / {}",
                         t.getAmount(), t.getCategory().getName(), t.getTransactionDate()));
+
+        List<Category> byUser = categoryRepository.findByUser(user);
+        for(Category c : byUser){
+            log.info(c.getEmoji());
+        }
+
 
         // 3) search(...) 필터 조합 확인
         PageRequest pageRequest = PageRequest.of(0, 10);
