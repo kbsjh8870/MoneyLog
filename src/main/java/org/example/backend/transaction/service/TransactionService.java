@@ -70,14 +70,13 @@ public class TransactionService {
         Transaction currentTx = findOwned(transactionId, userId);
 
         Long categoryId = request.getCategoryId() != null ? request.getCategoryId() : currentTx.getCategory().getId();
-        CategoryType type = request.getType() != null ? request.getType() : currentTx.getType();
-        Category category = validateCategoryNType(userId, categoryId, type);
+        Category category = getOwnedCategory(userId, categoryId);
 
         Long amount = request.getAmount() != null ? request.getAmount() : currentTx.getAmount();
         String description = request.getDescription() != null ? request.getDescription() : currentTx.getDescription();
         LocalDate transactionDate = request.getTransactionDate() != null ? request.getTransactionDate() : currentTx.getTransactionDate();
 
-        currentTx.update(category, type, amount, description, transactionDate);
+        currentTx.update(category, category.getType(), amount, description, transactionDate);
 
         return TransactionResponse.from(currentTx);
     }
@@ -95,8 +94,7 @@ public class TransactionService {
     }
 
     public Category validateCategoryNType(Long userId, Long categoryId, CategoryType type){
-        Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
-                .orElseThrow(() -> new NotFoundException("NOT_FOUND_CATEGORY","존재하지 않는 카테고리 - " + categoryId));
+        Category category = getOwnedCategory(userId, categoryId);
 
         if (category.getType() != type) {
             throw new InvalidRequestException("CATEGORY_TYPE_MISMATCH",
@@ -104,5 +102,10 @@ public class TransactionService {
         }
 
         return category;
+    }
+
+    public Category getOwnedCategory(Long userId, Long categoryId){
+        return categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() -> new NotFoundException("NOT_FOUND_CATEGORY","존재하지 않는 카테고리 - " + categoryId));
     }
 }

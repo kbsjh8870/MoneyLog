@@ -11,6 +11,8 @@ import org.example.backend.common.exception.InvalidRequestException;
 import org.example.backend.common.exception.NotFoundException;
 import org.example.backend.user.entity.User;
 import org.example.backend.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,12 @@ public class CategoryService  {
         categoryRepository.saveAll(defaults);
     }
 
+    // 카테고리 조회
+    public Page<CategoryResponse> getCategories(Long userId, CategoryType type, Pageable pageable){ // INCOME/EXPENSE
+        return categoryRepository.findByUserIdAndType(userId, type, pageable)
+                .map(CategoryResponse::from);
+    }
+
     // 카테고리 추가
     @Transactional
     public CategoryResponse addCategory(Long userId, CategoryRequest request){
@@ -59,5 +67,31 @@ public class CategoryService  {
         return CategoryResponse.from(categoryRepository.save(category));
     }
 
-    
+    // 카테고리 수정
+    @Transactional
+    public CategoryResponse updateCategory(Long userId, Long categoryId, CategoryRequest request){
+
+        Category currentCty = validateCategory(userId,categoryId);
+
+        String categoryName = request.getCategoryName() != null ? request.getCategoryName() : currentCty.getName();
+        String emoji = request.getEmoji() != null ? request.getEmoji() : currentCty.getEmoji();
+        CategoryType type = request.getType() != null ? request.getType() : currentCty.getType();
+
+        currentCty.update(categoryName, emoji, type);
+
+        return CategoryResponse.from(currentCty);
+    }
+
+    // 카테고리 삭제
+    @Transactional
+    public void deleteCategory(Long userId, Long categoryId){
+
+        Category category = validateCategory(userId,categoryId);
+
+        categoryRepository.delete(category);
+    }
+
+    public Category validateCategory(Long userId, Long categoryId){
+        return categoryRepository.findByIdAndUserId(categoryId,userId).orElseThrow(()->new NotFoundException("NOT_FOUND_CATEGORY","존재하지 않는 카테고리입니다"+categoryId));
+    }
 }
