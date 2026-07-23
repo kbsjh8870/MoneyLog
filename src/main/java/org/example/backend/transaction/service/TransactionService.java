@@ -91,11 +91,11 @@ public class TransactionService {
     }
 
     public Transaction findOwned(Long transactionId, Long userId){
-        return transactionRepository.findByIdAndUser_Id(transactionId,userId).orElseThrow(()-> new NotFoundException("NOT_FOUND_TRANSACTION","거래 내역이 없음 + "+transactionId));
+        return transactionRepository.findByIdAndUserId(transactionId,userId).orElseThrow(()-> new NotFoundException("NOT_FOUND_TRANSACTION","거래 내역이 없음 + "+transactionId));
     }
 
     public Category validateCategoryNType(Long userId, Long categoryId, CategoryType type){
-        Category category = categoryRepository.findByIdAndUser_Id(categoryId, userId)
+        Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
                 .orElseThrow(() -> new NotFoundException("NOT_FOUND_CATEGORY","존재하지 않는 카테고리 - " + categoryId));
 
         if (category.getType() != type) {

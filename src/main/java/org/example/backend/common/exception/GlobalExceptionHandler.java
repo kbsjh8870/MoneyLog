@@ -23,6 +23,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(e.getErr_code(), e.getMessage()));
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateResourceException(DuplicateResourceException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(e.getErr_code(), e.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class) // @Valid 예외 검증
     public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
