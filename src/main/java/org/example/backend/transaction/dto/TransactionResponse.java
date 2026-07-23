@@ -1,12 +1,14 @@
 package org.example.backend.transaction.dto;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.example.backend.category.entity.CategoryType;
 import org.example.backend.transaction.entity.Transaction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
 @Builder
 public class TransactionResponse {
     private Long id;
