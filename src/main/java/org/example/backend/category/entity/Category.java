@@ -39,4 +39,10 @@ public class Category extends BaseTimeEntity {
         this.type = type;
         this.emoji = emoji;
     }
+
+    public void update(String categoryName, String emoji, CategoryType type){
+        this.name = categoryName;
+        this.emoji = emoji;
+        this.type = type;
+    }
 }

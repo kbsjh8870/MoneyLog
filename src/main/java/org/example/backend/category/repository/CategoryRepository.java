@@ -1,7 +1,10 @@
 package org.example.backend.category.repository;
 
 import org.example.backend.category.entity.Category;
+import org.example.backend.category.entity.CategoryType;
 import org.example.backend.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,4 +18,6 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     Boolean existsByUserId(Long userId);
 
     Boolean existsByNameAndUserId(String name, Long userId);
+
+    Page<Category> findByUserIdAndType(Long userId, CategoryType type, Pageable pageable);
 }
