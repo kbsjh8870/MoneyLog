@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.category.entity.Category;
 import org.example.backend.category.entity.CategoryType;
 import org.example.backend.category.repository.CategoryRepository;
+import org.example.backend.common.exception.CustomException;
+import org.example.backend.common.exception.ErrorCode;
 import org.example.backend.common.exception.InvalidRequestException;
-import org.example.backend.common.exception.NotFoundException;
 import org.example.backend.transaction.dto.TransactionRequest;
 import org.example.backend.transaction.dto.TransactionResponse;
 import org.example.backend.transaction.dto.TransactionSearchRequest;
@@ -90,15 +91,14 @@ public class TransactionService {
     }
 
     public Transaction findOwned(Long transactionId, Long userId){
-        return transactionRepository.findByIdAndUserId(transactionId,userId).orElseThrow(()-> new NotFoundException("NOT_FOUND_TRANSACTION","거래 내역이 없음 + "+transactionId));
+        return transactionRepository.findByIdAndUserId(transactionId,userId).orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_TRANSACTION, " transaction Id - "+transactionId));
     }
 
     public Category validateCategoryNType(Long userId, Long categoryId, CategoryType type){
         Category category = getOwnedCategory(userId, categoryId);
 
         if (category.getType() != type) {
-            throw new InvalidRequestException("CATEGORY_TYPE_MISMATCH",
-                    "선택한 카테고리(" + category.getName() + ")는 " + category.getType() + " 유형입니다.");
+            throw new CustomException(ErrorCode.CATEGORY_TYPE_MISMATCH, " category Id - "+categoryId + "는 유형이 "+ type + " 입니다");
         }
 
         return category;
@@ -106,6 +106,6 @@ public class TransactionService {
 
     public Category getOwnedCategory(Long userId, Long categoryId){
         return categoryRepository.findByIdAndUserId(categoryId, userId)
-                .orElseThrow(() -> new NotFoundException("NOT_FOUND_CATEGORY","존재하지 않는 카테고리 - " + categoryId));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CATEGORY," category Id - "+categoryId));
     }
 }
