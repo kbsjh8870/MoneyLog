@@ -11,31 +11,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFoundException(NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(e.getErr_code(), e.getMessage()));
-    }
-
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidRequestException(InvalidRequestException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(e.getErr_code(), e.getMessage()));
-    }
-
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDuplicateResourceException(DuplicateResourceException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error(e.getErr_code(), e.getMessage()));
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCustom(CustomException e) {
+        ErrorCode ec = e.getErrorCode();
+        return ResponseEntity.status(ec.getStatus())
+                .body(ApiResponse.error(ec.name(), e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class) // @Valid 예외 검증
     public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .findFirst()
-                .map(FieldError::getDefaultMessage)
-                .orElse("잘못된 요청입니다.");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error("INVALID_REQUEST", message));
+                .map(fe-> fe.getField() + ": "+ fe.getDefaultMessage())
+                .orElse(ErrorCode.VALIDATION_ERROR.getMessage());
+        return ResponseEntity.status(ErrorCode.VALIDATION_ERROR.getStatus())
+                .body(ApiResponse.error(ErrorCode.VALIDATION_ERROR.name(), message));
     }
 }

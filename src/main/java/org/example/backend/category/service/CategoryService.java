@@ -6,9 +6,7 @@ import org.example.backend.category.dto.CategoryResponse;
 import org.example.backend.category.entity.Category;
 import org.example.backend.category.entity.CategoryType;
 import org.example.backend.category.repository.CategoryRepository;
-import org.example.backend.common.exception.DuplicateResourceException;
-import org.example.backend.common.exception.InvalidRequestException;
-import org.example.backend.common.exception.NotFoundException;
+import org.example.backend.common.exception.*;
 import org.example.backend.user.entity.User;
 import org.example.backend.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -52,10 +50,10 @@ public class CategoryService  {
     @Transactional
     public CategoryResponse addCategory(Long userId, CategoryRequest request){
 
-        User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("NOT_FOUND_USER","존재하지 않는 사용자입니다. - "+userId));
+        User user = userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_USER, " user Id - "+userId));
 
         if(categoryRepository.existsByNameAndUserId(request.getCategoryName(), userId))
-            throw new DuplicateResourceException("DUPLICATE_CATEGORY_NAME", "이미 존재하는 카테고리 이름입니다. - " + request.getCategoryName());
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, " (카테고리 중복) - "+request.getCategoryName());
 
         Category category = Category.builder()
                 .user(user)
@@ -92,6 +90,6 @@ public class CategoryService  {
     }
 
     public Category validateCategory(Long userId, Long categoryId){
-        return categoryRepository.findByIdAndUserId(categoryId,userId).orElseThrow(()->new NotFoundException("NOT_FOUND_CATEGORY","존재하지 않는 카테고리입니다"+categoryId));
+        return categoryRepository.findByIdAndUserId(categoryId,userId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_CATEGORY, " category Id - "+categoryId));
     }
 }
