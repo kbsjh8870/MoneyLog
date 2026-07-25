@@ -1,6 +1,7 @@
 package org.example.backend.global.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.security.jwt.filter.JwtAuthenticationFilter;
 import org.example.backend.user.entity.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

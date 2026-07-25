@@ -6,7 +6,6 @@ import org.example.backend.category.entity.CategoryType;
 import org.example.backend.category.repository.CategoryRepository;
 import org.example.backend.common.exception.CustomException;
 import org.example.backend.common.exception.ErrorCode;
-import org.example.backend.common.exception.InvalidRequestException;
 import org.example.backend.transaction.dto.TransactionRequest;
 import org.example.backend.transaction.dto.TransactionResponse;
 import org.example.backend.transaction.dto.TransactionSearchRequest;

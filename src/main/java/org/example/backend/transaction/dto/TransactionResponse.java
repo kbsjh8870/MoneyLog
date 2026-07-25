@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class TransactionResponse {
-    private Long id;
-    private CategoryType type;
-    private Long amount;
-    private Long categoryId;
-    private String categoryName;
-    private LocalDate transactionDate;
-    private LocalDateTime createdAt;
+    private final Long id;
+    private final CategoryType type;
+    private final Long amount;
+    private final Long categoryId;
+    private final String categoryName;
+    private final LocalDate transactionDate;
+    private final LocalDateTime createdAt;
 
     public static TransactionResponse from(Transaction transaction){
         return TransactionResponse.builder()
