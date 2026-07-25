@@ -8,13 +8,13 @@ import org.example.backend.category.entity.CategoryType;
 @Getter
 @Builder
 public class CategoryResponse {
-    private Long id;
+    private final Long id;
 
-    private String categoryName;
+    private final String categoryName;
 
-    private String emoji;
+    private final String emoji;
 
-    private CategoryType type;
+    private final CategoryType type;
 
     public static CategoryResponse from(Category category){
         return CategoryResponse.builder()
