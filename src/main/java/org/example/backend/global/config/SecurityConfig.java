@@ -1,6 +1,8 @@
 package org.example.backend.global.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.security.handler.RestAccessDeniedHandler;
+import org.example.backend.security.handler.RestAuthenticationEntryPoint;
 import org.example.backend.security.jwt.filter.JwtAuthenticationFilter;
 import org.example.backend.user.entity.User;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-  /*  private final RestAuthenticationEntryPoint authenticationEntryPoint;
-    private final RestAccessDeniedHandler accessDeniedHandler;*/
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
+    private final RestAccessDeniedHandler accessDeniedHandler;
 
     private static final String[] WHITE_LIST={
             "/api/auth/signpup",
@@ -38,10 +40,10 @@ public class SecurityConfig {
                         .requestMatchers(WHITE_LIST).permitAll()
                         .anyRequest().authenticated()
                 )
-                /*.exceptionHandling(ex -> ex
+                .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
-                )*/
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
