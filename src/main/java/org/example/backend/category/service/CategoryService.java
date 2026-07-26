@@ -69,7 +69,7 @@ public class CategoryService  {
     @Transactional
     public CategoryResponse updateCategory(Long userId, Long categoryId, CategoryRequest request){
 
-        Category currentCty = validateCategory(userId,categoryId);
+        Category currentCty = findOwned(userId,categoryId);
 
         String categoryName = request.getCategoryName() != null ? request.getCategoryName() : currentCty.getName();
         String emoji = request.getEmoji() != null ? request.getEmoji() : currentCty.getEmoji();
@@ -84,12 +84,12 @@ public class CategoryService  {
     @Transactional
     public void deleteCategory(Long userId, Long categoryId){
 
-        Category category = validateCategory(userId,categoryId);
+        Category category = findOwned(userId,categoryId);
 
         categoryRepository.delete(category);
     }
 
-    public Category validateCategory(Long userId, Long categoryId){
+    public Category findOwned(Long userId, Long categoryId){
         return categoryRepository.findByIdAndUserId(categoryId,userId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_CATEGORY, " category Id - "+categoryId));
     }
 }
