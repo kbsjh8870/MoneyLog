@@ -20,4 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     Boolean existsByNameAndUserId(String name, Long userId);
 
     Page<Category> findByUserIdAndType(Long userId, CategoryType type, Pageable pageable);
+
+    void deleteAllByUserId(Long userId);
 }
