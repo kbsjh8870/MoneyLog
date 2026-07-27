@@ -71,6 +71,6 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             # 최신 이미지 받아 재기동
             docker compose pull app
-            docker compose up -d
+            docker compose up -d app
             # 안 쓰는 옛 이미지 정리
             docker image prune -f
