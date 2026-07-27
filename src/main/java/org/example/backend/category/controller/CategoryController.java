@@ -26,7 +26,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategories(CategoryRequest request,
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategories(CategoryRequest request, // @ModelAttribute -> required Setter
                                                                              @PageableDefault(size = 5)Pageable pageable,
                                                                              @AuthenticationPrincipal CustomUserDetails customUserDetails){
         Page<CategoryResponse> categories = categoryService.getCategories(customUserDetails.getUserId(), request.getType(), pageable);

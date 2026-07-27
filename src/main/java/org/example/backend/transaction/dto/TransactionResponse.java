@@ -17,6 +17,7 @@ public class TransactionResponse {
     private final Long categoryId;
     private final String categoryName;
     private final LocalDate transactionDate;
+    private final String description;
     private final LocalDateTime createdAt;
 
     public static TransactionResponse from(Transaction transaction){
@@ -27,6 +28,7 @@ public class TransactionResponse {
                 .categoryId(transaction.getCategory().getId())
                 .categoryName(transaction.getCategory().getName())
                 .transactionDate(transaction.getTransactionDate())
+                .description(transaction.getDescription())
                 .createdAt(transaction.getCreatedAt())
                 .build();
     }

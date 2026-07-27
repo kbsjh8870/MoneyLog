@@ -4,9 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.Setter;
 import org.example.backend.category.entity.CategoryType;
 
 @Getter
+@Setter
 public class CategoryRequest {
     @NotBlank(message = "카테고리 이름을 입력해주세요.")
     private String categoryName;

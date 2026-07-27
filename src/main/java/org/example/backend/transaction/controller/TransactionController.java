@@ -52,7 +52,7 @@ public class TransactionController {
     public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTxList(@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
                                                                             @RequestParam(required = false) CategoryType type,
                                                                             @RequestParam(required = false) String categoryName,
-                                                                            @PageableDefault(size=10) Pageable pageable,
+                                                                            @PageableDefault(size= 5) Pageable pageable,
                                                                             @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
         TransactionSearchRequest tsr = new TransactionSearchRequest(yearMonth, type, categoryName);

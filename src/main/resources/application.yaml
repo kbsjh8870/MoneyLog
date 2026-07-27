@@ -16,6 +16,8 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expiration-ms: 3600000 # accessToken 1시간
+  refresh-key: ${JWT_REFRESH}
+  refresh-expiration-ms: 1209600000 # refreshToken 2주
 
 springdoc:
   swagger-ui:

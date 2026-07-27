@@ -3,13 +3,12 @@ package org.example.backend.user.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.common.response.ApiResponse;
-import org.example.backend.user.dto.LoginRequest;
-import org.example.backend.user.dto.SignUpRequest;
-import org.example.backend.user.dto.SignUpResponse;
-import org.example.backend.user.dto.TokenResponse;
+import org.example.backend.security.CustomUserDetails;
+import org.example.backend.user.dto.*;
 import org.example.backend.user.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,5 +31,19 @@ public class AuthController {
 
         return ResponseEntity.ok(ApiResponse.success("로그인 성공",response)); // accessToken, Bearer, nickname // 프론트단에서 헤더에 토큰 실어야함.
 
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<ApiResponse<TokenResponse>> reissue(@Valid @RequestBody ReissueRequest request){
+        TokenResponse response = authService.reissue(request.getRefreshToken());
+
+        return ResponseEntity.ok(ApiResponse.success("재발급 성공",response));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        authService.logout(customUserDetails.getUserId());
+
+        return ResponseEntity.ok(ApiResponse.success("로그아웃 성공",null));
     }
 }

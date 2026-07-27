@@ -45,6 +45,7 @@ public class TransactionService {
     }
 
     // 단건 조회
+    @Transactional(readOnly = true)
     public TransactionResponse getTransaction(Long userId, Long transactionId){
 
         Transaction tx = findOwned(transactionId,userId);
@@ -53,6 +54,7 @@ public class TransactionService {
     }
 
     // 다건 조회 (페이징)
+    @Transactional(readOnly = true)
     public Page<TransactionResponse> getTransactionPages(Long userId, TransactionSearchRequest condition, Pageable pageable){
         return transactionRepository.search(
                         userId,
