@@ -38,6 +38,15 @@ services:
     networks:
       - moneylog-net
 
+  frontend:
+    image: ghcr.io/${GH_OWNER}/moneylog-frontend:latest
+    container_name: moneylog-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - moneylog-net
+
 volumes:
   db-data:
 
