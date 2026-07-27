@@ -1,0 +1,62 @@
+name: CD - Deploy to EC2
+
+on:
+  workflow_run:
+    workflows: ["CI"] # CI가 성공한 뒤에만 배포
+    types: [completed]
+    branches: ["main"]
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/moneylog
+
+jobs:
+  # 1) 이미지 빌드 후 GHCR에 push
+  build-image:
+    if: github.event.workflow_run.conclusion == 'success' # CI 실패 시 배포 안 함
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # GHCR에 push하려면 필요
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }} # CI가 검증한 커밋 그대로 배포
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.event.workflow_run.head_sha }}
+
+  # 2) EC2에 SSH 접속해서 재배포
+  deploy:
+    needs: build-image        # 이미지 push가 끝나야 배포
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read # GHCR에서 이미지 pull하려면 필요
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/moneylog
+            # GHCR 로그인 (프라이빗 이미지 pull용)
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # 최신 이미지 받아 재기동
+            docker compose pull app
+            docker compose up -d
+            # 안 쓰는 옛 이미지 정리
+            docker image prune -f
