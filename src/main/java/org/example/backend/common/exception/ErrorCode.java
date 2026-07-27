@@ -20,7 +20,10 @@ public enum ErrorCode {
     // 404 - 리소스 없음
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
     NOT_FOUND_TRANSACTION(HttpStatus.NOT_FOUND, "거래내역을 찾을 수 없습니다."),
-    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"유효하지 않은 토큰."),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.FORBIDDEN,"만료된 토큰");
 
     private final HttpStatus status;
     private final String message;

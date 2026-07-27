@@ -1,0 +1,45 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: moneylog-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: moneylog
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck: # DB가 완전히 뜬 뒤 app 붙이기 위함
+      test: ["CMD", "mysqladmin","ping","-h","localhost","-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - moneylog-net
+
+  app:
+    image: ghcr.io/${GH_OWNER}/moneylog:latest # CD가 푸쉬한 이미지 (로컬 테스트떈 build 사용)
+    build: . # 로컬에서 현재 Dockerfile
+    container_name: moneylog-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy # db가 healthy되면 시작
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/moneylog?serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH: ${JWT_REFRESH}
+    ports:
+      - "8080:8080"
+    networks:
+      - moneylog-net
+
+volumes:
+  db-data:
+
+networks:
+  moneylog-net:
