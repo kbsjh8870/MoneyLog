@@ -17,6 +17,8 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     // 409 - 리소스 중복
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT,"이미 사용 중인 리소스입니다."),
+    // 409 - 사용 중인 카테고리 삭제 시도
+    CATEGORY_IN_USE(HttpStatus.CONFLICT, "거래내역에서 사용 중인 카테고리입니다. 거래내역을 먼저 삭제해주세요."),
     // 404 - 리소스 없음
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
     NOT_FOUND_TRANSACTION(HttpStatus.NOT_FOUND, "거래내역을 찾을 수 없습니다."),
