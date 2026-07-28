@@ -1,5 +1,6 @@
 package org.example.backend.transaction.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.category.entity.Category;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -77,5 +79,42 @@ public class TransactionController {
         transactionService.delete(customUserDetails.getUserId(), id);
 
         return ApiResponse.success(id+"번 트랜잭션 삭제 완료",null);
+    }
+
+    // csv 내보내기
+    @GetMapping(value = "/export", produces = "text/csv")
+    public void export(HttpServletResponse response,
+                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
+                                                         @RequestParam(required = false) CategoryType type,
+                                                         @RequestParam(required = false) String categoryName) throws IOException {
+        TransactionSearchRequest searchRequest = new TransactionSearchRequest(yearMonth, type, categoryName);
+
+        response.setHeader("Content-Disposition","attachment; filename=\"transactions.csv\"");
+        response.setCharacterEncoding("UTF-8");
+
+        var writer = response.getWriter();
+        writer.write('\ufeff');               // 엑셀 한글 깨짐 방지
+        writer.println("날짜,타입,카테고리,금액,설명");
+
+        for (TransactionResponse tx : transactionService.getTransactionsForExport(customUserDetails.getUserId(), searchRequest)) {
+            writer.println(String.join(",",
+                    csvField(tx.getTransactionDate().toString()),
+                    csvField(tx.getType().toString()),
+                    csvField(tx.getCategoryName()),
+                    csvField(String.valueOf(tx.getAmount())),
+                    csvField(tx.getDescription())
+            ));
+        }
+    }
+
+    private String csvField(String value){
+        if (value == null) {
+            return "";
+        }
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }

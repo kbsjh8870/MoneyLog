@@ -1,11 +1,13 @@
 package org.example.backend.transaction.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.category.entity.Category;
 import org.example.backend.category.entity.CategoryType;
 import org.example.backend.category.repository.CategoryRepository;
 import org.example.backend.common.exception.CustomException;
 import org.example.backend.common.exception.ErrorCode;
+import org.example.backend.security.CustomUserDetails;
 import org.example.backend.transaction.dto.TransactionRequest;
 import org.example.backend.transaction.dto.TransactionResponse;
 import org.example.backend.transaction.dto.TransactionSearchRequest;
@@ -14,10 +16,13 @@ import org.example.backend.transaction.entity.Transaction;
 import org.example.backend.transaction.repository.TransactionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -108,5 +113,18 @@ public class TransactionService {
     public Category getOwnedCategory(Long userId, Long categoryId){
         return categoryRepository.findByIdAndUserId(categoryId, userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CATEGORY," category Id - "+categoryId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<TransactionResponse> getTransactionsForExport(Long userId, TransactionSearchRequest searchRequest){
+        return transactionRepository.search(
+                userId,
+                searchRequest.getSelectedMonth(),
+                searchRequest.getSelectedType(),
+                searchRequest.getSelectedCategoryName(),
+                Pageable.unpaged()
+        )
+                .map(TransactionResponse::from)
+                .getContent();
     }
 }
