@@ -89,7 +89,7 @@ public class CategoryService  {
         Category category = findOwned(userId,categoryId);
 
         if(transactionRepository.existsByCategoryId(categoryId)){
-            throw new CustomException(ErrorCode.CATEGORY_IN_USE, " category Id - "+categoryId);
+            throw new CustomException(ErrorCode.CATEGORY_IN_USE);
         }
 
         categoryRepository.delete(category);
