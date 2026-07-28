@@ -23,7 +23,7 @@ public class TransactionRepositoryImpl implements TransactionRepositoryCustom {
 
     @Override
     public Page<Transaction> search(Long userId, YearMonth month, CategoryType type, String categoryName, Pageable pageable) {
-        List<Transaction> content = queryFactory
+        JPAQuery<Transaction> query = queryFactory
                 .selectFrom(transaction)
                 .where(
                         transaction.user.id.eq(userId),
@@ -31,10 +31,15 @@ public class TransactionRepositoryImpl implements TransactionRepositoryCustom {
                         typeEq(type),
                         categoryNameEq(categoryName)
                 )
-                .orderBy(transaction.transactionDate.desc(), transaction.id.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .orderBy(transaction.transactionDate.desc(), transaction.id.desc());
+
+        // csv export를 위해 Unpaged한 리스트
+        if(!pageable.isUnpaged()){
+            query.offset(pageable.getOffset())
+                    .limit(pageable.getPageSize());
+        }
+
+        List<Transaction> content = query.fetch();
 
         JPAQuery<Long> countQuery = queryFactory
                 .select(transaction.count())
