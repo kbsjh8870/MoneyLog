@@ -8,7 +8,7 @@
 
 | | URL |
 |---|---|
-| API (Swagger) | http://3.37.36.180:8080/swagger-ui.html |
+| API (Swagger) | [http://3.37.36.180:8080/swagger-ui.html](http://3.37.36.180:8080/swagger-ui/index.html) |
 | 프론트엔드 | http://3.37.36.180/ |
 
 **테스트 계정**: `demo@moneylog.com` / `demo1234!`
