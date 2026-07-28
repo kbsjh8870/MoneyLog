@@ -7,6 +7,7 @@ import org.example.backend.category.entity.Category;
 import org.example.backend.category.entity.CategoryType;
 import org.example.backend.category.repository.CategoryRepository;
 import org.example.backend.common.exception.*;
+import org.example.backend.transaction.repository.TransactionRepository;
 import org.example.backend.user.entity.User;
 import org.example.backend.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ public class CategoryService  {
 
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
 
     // 기본 카테고리 생성 (회원가입 직후 호출)
     @Transactional
@@ -85,6 +87,10 @@ public class CategoryService  {
     public void deleteCategory(Long userId, Long categoryId){
 
         Category category = findOwned(userId,categoryId);
+
+        if(transactionRepository.existsByCategoryId(categoryId)){
+            throw new CustomException(ErrorCode.CATEGORY_IN_USE, " category Id - "+categoryId);
+        }
 
         categoryRepository.delete(category);
     }

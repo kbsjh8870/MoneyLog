@@ -17,4 +17,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     Long countByUserId(Long userId);
 
     void deleteAllByUserId(Long userId);
+
+    boolean existsByCategoryId(Long categoryId);
 }
