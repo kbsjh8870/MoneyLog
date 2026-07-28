@@ -152,3 +152,7 @@ src/main/java/org/example/backend/
 ├── global/          # 공통 설정(Security, JPA, QueryDSL), 시드 데이터
 └── common/          # 공통 응답 포맷, 커스텀 예외, 에러 코드
 ```
+
+## 회고
+
+프로젝트 진행 중 겪은 문제와 해결 과정, 배운 점은 [회고](./docs/retrospective.md) 참고.
