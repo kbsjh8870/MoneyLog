@@ -35,6 +35,7 @@
 - `docker compose up`은 `image:`가 로컬에 있으면 `build:`가 있어도 재빌드를 건너뛴다 — 로컬 테스트 중 코드를 고쳤는데 반영이 안 되는 걸 겪고 나서 `image`/`build` 우선순위를 정확히 알게 됨.
 - GitHub Actions의 `workflow_run` 트리거는 `github.event.workflow_run.head_sha`를 써야 하고, `GITHUB_TOKEN` 권한(`permissions:`)은 잡(job)마다 따로 선언해야 한다는 것.
 - 커밋 메시지에 `[skip ci]`를 넣으면 `push` 트리거 워크플로를 안돌게 할 수 있음.
+- QueryDSL 등으로 동적 쿼리를 작성해서 페이징을 해야할 때 new PageImpl<>을 반환하는게 아니라 PageableExecutionUtils를 반환하게 해주면 마지막 인자, 즉 총 갯수에 대한 연산에 대해 최적화를 수행한다. 예를 들어 총 13개 있는 요소에 대해 5개씩 페이징하면 두번 페이징되고 남은 3개에서 갯수 count연산을 수행하지 않고 바로 3개를 준다. PageImpl은 total을 이미 계산된 값으로 받기 때문에 호출부에서 항상 count 쿼리를 먼저 실행해둬야 하는 반면, PageableExecutionUtils.getPage()는 count를 LongSupplier로 지연 전달받아 정말 필요한 경우(마지막 페이지가 아니라고 확신할 수 없을 때)에만 실행한다.
 
 ## 🚧 가장 크게 막혔던 지점
 
